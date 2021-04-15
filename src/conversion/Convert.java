@@ -69,7 +69,12 @@ public class Convert {
 				HibernateUtil.persistPlayer(p);
 			}
 			System.out.println("Persisted Players.");
+			
 			// Persist Teams.
+			for (Team t : teams.values()) {
+				HibernateUtil.persistTeam(t);
+			}
+			System.out.println("Persisted teams.");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
