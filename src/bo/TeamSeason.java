@@ -3,14 +3,14 @@ package bo;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import javax.persistence.CascadeType;
+//import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+//import javax.persistence.OneToOne;
 
 @SuppressWarnings("serial")
 @Entity(name = "teamseason")

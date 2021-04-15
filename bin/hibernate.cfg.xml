@@ -6,8 +6,8 @@
 <hibernate-configuration>
 <session-factory>
 <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
-<property name="hibernate.connection.url">jdbc:sqlserver://192.168.150.129:1433;database=MLB</property>
-<property name="hibernate.connection.username">dude</property>
+<property name="hibernate.connection.url">jdbc:sqlserver://163.11.236.159:1433;database=MLB</property>
+<property name="hibernate.connection.username">kperont</property>
 <property name="hibernate.connection.password">password</property>
 <property name="hibernate.connection.pool_size">1</property>
 <property name="hibernate.default_catalog">dbo</property>
@@ -23,4 +23,3 @@
 <mapping class="bo.PitchingStats" />
 </session-factory>
 </hibernate-configuration>
-

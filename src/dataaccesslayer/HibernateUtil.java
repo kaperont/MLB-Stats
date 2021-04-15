@@ -25,6 +25,8 @@ public class HibernateUtil {
 			Configuration cfg = new Configuration()
 				.addAnnotatedClass(bo.Player.class)
 				.addAnnotatedClass(bo.PlayerSeason.class)
+				.addAnnotatedClass(bo.Team.class)
+				.addAnnotatedClass(bo.TeamSeason.class)
 				.addAnnotatedClass(bo.BattingStats.class)
 				.addAnnotatedClass(bo.CatchingStats.class)
 				.addAnnotatedClass(bo.FieldingStats.class)

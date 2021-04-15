@@ -7,9 +7,9 @@ import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+// import java.util.HashSet;
+// import java.util.Map;
+// import java.util.Set;
 import java.sql.SQLException;
 
 import bo.BattingStats;
@@ -25,10 +25,10 @@ import dataaccesslayer.HibernateUtil;
 public class Convert {
 
 	static Connection conn;
-	static final String MYSQL_CONN_URL = "jdbc:mysql://163.11.237.207/mlb?"
+	static final String MYSQL_CONN_URL = "jdbc:mysql://163.11.236.96/mlb?"
     + "verifyServerCertificate=false&useSSL=true&"
     + "useLegacyDatetimeCode=false&serverTimezone=America/New_York&"
-    + "user=dude&password=password";  
+    + "user=root&password=password";  
 	//static Map<String, Team> teams = new HashMap<String, Team>(); 
 	//static Map<String, TeamSeason> teamSeasons = new HashMap<String, TeamSeason>();
 
@@ -311,6 +311,7 @@ public class Convert {
 					PlayerSeason s = p.getPlayerSeason(yid);
 					// it is possible to see more than one of these per player if he switched teams
 					// set all of these attrs the first time we see this playerseason
+					String teamID = rs.getString("teamID");
 					if (s == null) {
 						s = new PlayerSeason(p,yid);
 						p.addSeason(s);
