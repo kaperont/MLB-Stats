@@ -53,19 +53,19 @@ public class Team{
 
 
     // GETTERS
-    public Set<String> getName(){
+    public String getName(){
         return name;
     }
 
-    public Set<String> getLeague(){
+    public String getLeague(){
         return league;
     }
 
-    public Set<String> getYearFounded(){
+    public String getYearFounded(){
         return yearFounded;
     }
 
-    public Set<String> getYearLast(){
+    public String getYearLast(){
         return yearLast;
     }
 

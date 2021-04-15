@@ -17,7 +17,7 @@ import javax.persistence.OneToOne;
 public class TeamSeason implements Serializable {
 
     @EmbeddedId
-    PlayerSeasonId id;
+    TeamSeasonId id;
 
     @Embeddable
     static class TeamSeasonId implements Serializable {
@@ -65,10 +65,14 @@ public class TeamSeason implements Serializable {
         TeamSeasonId tsi = new TeamSeasonId();
         tsi.team = t;
         tsi.teamYear = year;
-        this.id = psi;
+        this.id = tsi;
     }
 
     // GETTERS
+    public TeamSeasonId getId() {
+        return this.id;
+    }
+
     public Integer getYear() {
         return this.id.teamYear;
     }
