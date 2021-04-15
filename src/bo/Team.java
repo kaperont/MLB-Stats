@@ -24,14 +24,16 @@ public class Team{
     @Id
     Integer TeamId;
 
+	Set<TeamSeason> seasons = new HashSet<TeamSeason>();
+
     @Column
     String name;
     @Column
     String league;
     @Column
-    String yearFounded;
+    Integer yearFounded;
     @Column
-    String yearLast;
+    Integer yearLast;
 
 
     // SETTERS
@@ -43,16 +45,17 @@ public class Team{
         league = l;
     }
 
-    public void setYearFounded(String yf){
+    public void setYearFounded(Integer yf){
         yearFounded = yf;
     }
 
-    public void setYearLast(String yl){
+    public void setYearLast(Integer yl){
         yearLast = yl;
     }
 
 
     // GETTERS
+    
     public String getName(){
         return name;
     }
@@ -61,12 +64,19 @@ public class Team{
         return league;
     }
 
-    public String getYearFounded(){
+    public Integer getYearFounded(){
         return yearFounded;
     }
 
-    public String getYearLast(){
+    public Integer getYearLast(){
         return yearLast;
+    }
+
+    public TeamSeason getTeamSeason(String team) {
+        for (TeamSeason ts : seasons) {
+            if (ts.getTeam().equals(team)) return ts;
+        }
+        return null;
     }
 
 	@Override

@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.sql.SQLException;
 
 import bo.BattingStats;
@@ -22,10 +25,12 @@ import dataaccesslayer.HibernateUtil;
 public class Convert {
 
 	static Connection conn;
-	static final String MYSQL_CONN_URL = "jdbc:mysql://163.11.235.163/mlb?"
+	static final String MYSQL_CONN_URL = "jdbc:mysql://163.11.237.207/mlb?"
     + "verifyServerCertificate=false&useSSL=true&"
     + "useLegacyDatetimeCode=false&serverTimezone=America/New_York&"
-    + "user=user&password=password";  
+    + "user=dude&password=password";  
+	//static Map<String, Team> teams = new HashMap<String, Team>(); 
+	//static Map<String, TeamSeason> teamSeasons = new HashMap<String, TeamSeason>();
 
 	public static void main(String[] args) {
 		try {
@@ -52,7 +57,7 @@ public class Convert {
 		try {
 			HashMap<String,Player> players = getPlayers();
 			System.out.println("Players Retrieved.");
-			HashMap<String,Team> teams = getTeams();
+			HashMap<String, Team> teams = getTeams();
 			System.out.println("Teams Retrieved.");
 			addTeamSeasons(teams);
 			System.out.println("TeamSeasons Retrieved.");
@@ -64,10 +69,7 @@ public class Convert {
 				HibernateUtil.persistPlayer(p);
 			}
 			System.out.println("Persisted Players.");
-			
-			// Persist the team objects.
-
-			HibernateUtil.flushObjects();
+			// Persist Teams.
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -76,17 +78,83 @@ public class Convert {
 
 	public static HashMap<String, Team> getTeams() throws SQLException {
 		HashMap<String, Team> teams = new HashMap<String, Team>();
+
+		PreparedStatement ps = conn.prepareStatement("select distinct" +
+				"teamID, name, lgID" +
+				"from Teams");
+		ResultSet rs = ps.executeQuery();
 		
-		// Get the teams. 
-		// Only capture the most recent team name and league.
+		while (rs.next()) {
+			String team = rs.getString("teamID");
+			String teamName = rs.getString("name");
+			String league = rs.getString("lgID");
+			int yearFounded = 0;
+			int yearLast = 0;
+
+			PreparedStatement ps1 = conn.prepareStatement("select " +
+				"min(yearID) " +
+				"from Teams" +
+				"where teamID=\'" + team + "\'");
+			ResultSet rs1 = ps1.executeQuery();
+			while (rs1.next()) {
+				yearFounded = rs1.getInt("year");
+			}
+
+			rs1.close();
+			ps1.close();
+
+			PreparedStatement ps2 = conn.prepareStatement("select " +
+				"max(yearID) " +
+				"from Teams" +
+				"where teamID=\'" + team + "\'");
+			ResultSet rs2 = ps2.executeQuery();
+			while (rs2.next()) {
+				yearLast = rs2.getInt("year");
+			}
+
+			rs2.close();
+			ps2.close();
+
+			Team t = new Team();
+			t.setName(teamName);
+			t.setLeague(league);
+			t.setYearFounded(yearFounded);
+			t.setYearLast(yearLast);
+
+			teams.put(team, t);
+		}
+
+		rs.close();
+		ps.close();
 
 		return teams;
 	}
 	
 	private static void addTeamSeasons(HashMap<String, Team> teams) throws SQLException {
-		
-		// Get team season data.
-		
+        try {
+			PreparedStatement ps = conn.prepareStatement("select " + 
+					"teamID, yearID, sum(G) as gamesPlayed, sum(W) as wins, sum(L) as losses, Rank, attendance " +
+					"from Teams " +
+					"group by teamID, yearID, Rank, attendance");
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				String team = rs.getString("teamID");
+				int yid = rs.getInt("yearID");
+				String games = rs.getString("gamesPlayed");
+				String win = rs.getString("wins");
+				String loss = rs.getString("losses");
+				String rank = rs.getString("Rank");
+				String att = rs.getString("attendance");
+
+				Team t = teams.get(team);
+				if (t != null) {
+					TeamSeason s = t.getTeamSeason(team);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static HashMap<String, Player> getPlayers() throws SQLException {
@@ -246,9 +314,7 @@ public class Convert {
 					else {
 						s.setGamesPlayed(rs.getInt("gamesPlayed") + s.getGamesPlayed());
 					}
-					
-					// Associate player with a team season.
-					
+//					// Add players to teamseason
 				}
 			}
 			System.out.println("PlayerSeasons Retrieved.");
