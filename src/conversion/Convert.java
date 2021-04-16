@@ -84,8 +84,8 @@ public class Convert {
 	public static HashMap<String, Team> getTeams() throws SQLException {
 		HashMap<String, Team> teams = new HashMap<String, Team>();
 
-		PreparedStatement ps = conn.prepareStatement("select distinct" +
-				"teamID, name, lgID" +
+		PreparedStatement ps = conn.prepareStatement("select distinct " +
+				"teamID, name, lgID " +
 				"from Teams");
 		ResultSet rs = ps.executeQuery();
 		
@@ -96,9 +96,14 @@ public class Convert {
 			int yearFounded = 0;
 			int yearLast = 0;
 
+			if (team == null	|| team.isEmpty() 
+								|| teamName == null 
+								|| teamName.isEmpty())
+				continue;
+
 			PreparedStatement ps1 = conn.prepareStatement("select " +
-				"min(yearID) " +
-				"from Teams" +
+				"min(yearID) as year " +
+				"from Teams " +
 				"where teamID=\'" + team + "\'");
 			ResultSet rs1 = ps1.executeQuery();
 			while (rs1.next()) {
@@ -109,8 +114,8 @@ public class Convert {
 			ps1.close();
 
 			PreparedStatement ps2 = conn.prepareStatement("select " +
-				"max(yearID) " +
-				"from Teams" +
+				"max(yearID) as year " +
+				"from Teams " +
 				"where teamID=\'" + team + "\'");
 			ResultSet rs2 = ps2.executeQuery();
 			while (rs2.next()) {
@@ -145,15 +150,23 @@ public class Convert {
 			while (rs.next()) {
 				String team = rs.getString("teamID");
 				int yid = rs.getInt("yearID");
-				String games = rs.getString("gamesPlayed");
-				String win = rs.getString("wins");
-				String loss = rs.getString("losses");
-				String rank = rs.getString("Rank");
-				String att = rs.getString("attendance");
+				int games = rs.getInt("gamesPlayed");
+				int win = rs.getInt("wins");
+				int loss = rs.getInt("losses");
+				int rank = rs.getInt("Rank");
+				int att = rs.getInt("attendance");
 
 				Team t = teams.get(team);
 				if (t != null) {
-					TeamSeason s = t.getTeamSeason(team);
+					TeamSeason s = new TeamSeason(t, yid);
+					s.setYear(yid);
+					s.setGamesPlayed(games);
+					s.setWins(win);
+					s.setLosses(loss);
+					s.setRank(rank);
+					s.setTotalAttendance(att);
+					
+					t.addSeason(s);
 				}
 			}
 		}
@@ -299,7 +312,7 @@ public class Convert {
 	public static void addSeasons(HashMap<String, Player> players, HashMap<String, Team> teams) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select " + 
-					"playerID, yearID, teamID, lgId, sum(G) as gamesPlayed " + 
+					"playerID, yearID, teamID, lgID, sum(G) as gamesPlayed " + 
 					"from Batting " + 
 					"group by playerID, yearID, teamID, lgID;");
 			ResultSet rs = ps.executeQuery();
@@ -307,20 +320,30 @@ public class Convert {
 				int yid = rs.getInt("yearID");
 				String pid = rs.getString("playerID");
 				Player p = players.get(pid);
+				String tid = rs.getString("teamID");
+				Team t = teams.get(tid);
 				if (p != null) {
 					PlayerSeason s = p.getPlayerSeason(yid);
+					TeamSeason ts = t.getTeamSeason(t);
 					// it is possible to see more than one of these per player if he switched teams
 					// set all of these attrs the first time we see this playerseason
-					String teamID = rs.getString("teamID");
+
 					if (s == null) {
 						s = new PlayerSeason(p,yid);
+						s.setGamesPlayed(rs.getInt("gamesPlayed"));	
+						s.setPlayer(p);
 						p.addSeason(s);
-						s.setGamesPlayed(rs.getInt("gamesPlayed"));
 					}
 					else {
 						s.setGamesPlayed(rs.getInt("gamesPlayed") + s.getGamesPlayed());
+						s.setPlayer(p);
 					}
-//					// Add players to teamseason
+
+					// Add players to teamseason
+					if(ts != null){
+						ts.addPlayer(p);
+					}
+					
 				}
 			}
 			System.out.println("PlayerSeasons Retrieved.");

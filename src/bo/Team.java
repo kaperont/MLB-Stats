@@ -1,29 +1,31 @@
 package bo;
 
-//import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-//import javax.persistence.CascadeType;
-//import javax.persistence.CollectionTable;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-//import javax.persistence.ElementCollection;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-//import javax.persistence.FetchType;
-//import javax.persistence.GeneratedValue;
-//import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-//import javax.persistence.JoinColumn;
-//import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
-//import org.hibernate.annotations.Fetch;
-//import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity(name = "team")
 public class Team{
     @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer TeamId;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "id.team")
+    @Fetch(FetchMode.JOIN)
 	Set<TeamSeason> seasons = new HashSet<TeamSeason>();
 
     @Column
@@ -53,6 +55,14 @@ public class Team{
         yearLast = yl;
     }
 
+    public void addSeason(TeamSeason s) {
+        seasons.add(s);
+    }
+
+    public void setId(Integer id){
+        this.TeamId = id;
+    }
+
 
     // GETTERS
 
@@ -72,11 +82,15 @@ public class Team{
         return yearLast;
     }
 
-    public TeamSeason getTeamSeason(String team) {
+    public TeamSeason getTeamSeason(Team team) {
         for (TeamSeason ts : seasons) {
             if (ts.getTeam().equals(team)) return ts;
         }
         return null;
+    }
+
+    public Integer getId(){
+        return this.TeamId;
     }
 
 	@Override

@@ -2,6 +2,8 @@ package bo;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 //import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,7 +12,15 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
+import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
 //import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @SuppressWarnings("serial")
 @Entity(name = "teamseason")
@@ -18,7 +28,6 @@ public class TeamSeason implements Serializable {
 
     @EmbeddedId
     TeamSeasonId id;
-
     @Embeddable
     static class TeamSeasonId implements Serializable {
         @ManyToOne
@@ -35,8 +44,7 @@ public class TeamSeason implements Serializable {
 			TeamSeasonId other = (TeamSeasonId)obj;
 			// in order for two different object of this type to be equal,
 			// they must be for the same year and for the same player
-			return (this.team==other.team &&
-					this.teamYear==other.teamYear);
+			return (this.team==other.team && this.teamYear==other.teamYear);
 		}
 
         @Override
@@ -47,6 +55,16 @@ public class TeamSeason implements Serializable {
 			return hash;
 		}
     }
+
+    // The @JoinTable annotation used within TeamSeason.java. There is no need to create a TeamSeasonPlayer B.O.
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "teamseasonplayer", 
+    joinColumns={
+        @JoinColumn(name="teamId", insertable = false, updatable = false), 
+        @JoinColumn(name="year",  insertable = false, updatable = false)}, 
+    inverseJoinColumns={
+        @JoinColumn(name="playerId", insertable = false, updatable = false)})
+    Set<Player> players = new HashSet<Player>();
 
     @Column
     int gamesPlayed;
@@ -101,6 +119,12 @@ public class TeamSeason implements Serializable {
         return totalAttendance;
     }
 
+    public Player getPlayer(Player player) {
+        for (Player p : players) {
+            if (p.equals(player)) return p;
+        }
+        return null;
+    }
 
     // SETTERS
     public void setYear(Integer y){
@@ -131,6 +155,9 @@ public class TeamSeason implements Serializable {
         totalAttendance = ta;
     }
 
+    public void addPlayer(Player p) {
+        players.add(p);
+    }
 
     @Override
 	public boolean equals(Object obj) {

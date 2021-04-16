@@ -17,6 +17,8 @@
 
 <mapping class="bo.Player"/>
 <mapping class="bo.PlayerSeason" />
+<mapping class="bo.Team"/>
+<mapping class="bo.TeamSeason"/>
 <mapping class="bo.BattingStats" />
 <mapping class="bo.CatchingStats" />
 <mapping class="bo.FieldingStats" />
