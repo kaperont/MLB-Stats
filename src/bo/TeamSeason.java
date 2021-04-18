@@ -28,6 +28,17 @@ public class TeamSeason implements Serializable {
 
     @EmbeddedId
     TeamSeasonId id;
+
+    // The @JoinTable annotation used within TeamSeason.java. There is no need to create a TeamSeasonPlayer B.O.
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "teamseasonplayer", 
+        joinColumns={
+            @JoinColumn(name="teamId", insertable = false, updatable = false), 
+            @JoinColumn(name="year",  insertable = false, updatable = false)}, 
+        inverseJoinColumns={
+            @JoinColumn(name="playerId", insertable = false, updatable = false)})
+    Set<Player> players = new HashSet<Player>();
     @Embeddable
     static class TeamSeasonId implements Serializable {
         @ManyToOne
@@ -55,16 +66,6 @@ public class TeamSeason implements Serializable {
 			return hash;
 		}
     }
-
-    // The @JoinTable annotation used within TeamSeason.java. There is no need to create a TeamSeasonPlayer B.O.
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "teamseasonplayer", 
-    joinColumns={
-        @JoinColumn(name="teamId", insertable = false, updatable = false), 
-        @JoinColumn(name="year",  insertable = false, updatable = false)}, 
-    inverseJoinColumns={
-        @JoinColumn(name="playerId", insertable = false, updatable = false)})
-    Set<Player> players = new HashSet<Player>();
 
     @Column
     int gamesPlayed;

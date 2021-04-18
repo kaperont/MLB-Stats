@@ -29,7 +29,7 @@ public class Convert {
     + "verifyServerCertificate=false&useSSL=true&"
     + "useLegacyDatetimeCode=false&serverTimezone=America/New_York&"
     + "user=root&password=password";  
-	//static Map<String, Team> teams = new HashMap<String, Team>(); 
+	//static Map<String, Team> teams = new HashMap<String, Team>();
 	//static Map<String, TeamSeason> teamSeasons = new HashMap<String, TeamSeason>();
 
 	public static void main(String[] args) {
@@ -65,9 +65,9 @@ public class Convert {
 			System.out.println("Positions Retrieved.");
 			addSeasons(players, teams);
 			System.out.println("Seasons Retrieved.");
-			for (Player p : players.values()) {
-				HibernateUtil.persistPlayer(p);
-			}
+			// for (Player p : players.values()) {
+			// 	HibernateUtil.persistPlayer(p);
+			// }
 			System.out.println("Persisted Players.");
 			
 			// Persist Teams.
