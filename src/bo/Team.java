@@ -1,19 +1,22 @@
+/////////////////////////////// TEAM CLASS ///////////////////////////////
+//      This is the Team class that contains data related to MLB Teams. //
+//                                                                      //
+//      Data includes name, league, yearFounded, and yearLast.          //
+/////////////////////////////// TEAM CLASS ///////////////////////////////
+
+
 package bo;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Fetch;
@@ -22,16 +25,21 @@ import org.hibernate.annotations.FetchMode;
 @Entity(name = "team")
 public class Team{
     @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer TeamId;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "id.team")
+    @Fetch(FetchMode.JOIN)
+	Set<TeamSeason> seasons = new HashSet<TeamSeason>();
 
     @Column
     String name;
     @Column
     String league;
     @Column
-    String yearFounded;
+    Integer yearFounded;
     @Column
-    String yearLast;
+    Integer yearLast;
 
 
     // SETTERS
@@ -43,32 +51,53 @@ public class Team{
         league = l;
     }
 
-    public void setYearFounded(String yf){
+    public void setYearFounded(Integer yf){
         yearFounded = yf;
     }
 
-    public void setYearLast(String yl){
+    public void setYearLast(Integer yl){
         yearLast = yl;
+    }
+
+    public void addSeason(TeamSeason s) {
+        seasons.add(s);
+    }
+
+    public void setId(Integer id){
+        this.TeamId = id;
     }
 
 
     // GETTERS
-    public Set<String> getName(){
+    public String getName(){
         return name;
     }
 
-    public Set<String> getLeague(){
+    public String getLeague(){
         return league;
     }
 
-    public Set<String> getYearFounded(){
+    public Integer getYearFounded(){
         return yearFounded;
     }
 
-    public Set<String> getYearLast(){
+    public Integer getYearLast(){
         return yearLast;
     }
 
+    // utility function
+    public TeamSeason getTeamSeason(Team team) {
+        for (TeamSeason ts : seasons) {
+            if (ts.getTeam().equals(team)) return ts;
+        }
+        return null;
+    }
+
+    public Integer getId(){
+        return this.TeamId;
+    }
+
+    // Compare Team objects
 	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof Team)){

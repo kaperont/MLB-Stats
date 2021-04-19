@@ -13,6 +13,7 @@ import org.hibernate.service.spi.Stoppable;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
 import bo.Player;
+import bo.Team;
 
 
 public class HibernateUtil {
@@ -24,6 +25,8 @@ public class HibernateUtil {
 			Configuration cfg = new Configuration()
 				.addAnnotatedClass(bo.Player.class)
 				.addAnnotatedClass(bo.PlayerSeason.class)
+				.addAnnotatedClass(bo.Team.class)
+				.addAnnotatedClass(bo.TeamSeason.class)
 				.addAnnotatedClass(bo.BattingStats.class)
 				.addAnnotatedClass(bo.CatchingStats.class)
 				.addAnnotatedClass(bo.FieldingStats.class)
@@ -99,12 +102,32 @@ public class HibernateUtil {
 		return list;
 	}
 	
+	// Persist Players to Database
 	public static boolean persistPlayer(Player p) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = session.getTransaction();
 		try {
 			tx.begin();
 			session.save(p);
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return true;
+	}
+
+	// Persist Teams to Database
+	public static boolean persistTeam(Team t){
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			// saveOrUpdate(t) saves or updates an existing team to the database.
+			tx.begin();
+			session.saveOrUpdate(t);
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();
