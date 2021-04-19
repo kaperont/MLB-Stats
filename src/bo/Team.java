@@ -1,18 +1,22 @@
+/////////////////////////////// TEAM CLASS ///////////////////////////////
+//      This is the Team class that contains data related to MLB Teams. //
+//                                                                      //
+//      Data includes name, league, yearFounded, and yearLast.          //
+/////////////////////////////// TEAM CLASS ///////////////////////////////
+
+
 package bo;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Fetch;
@@ -65,7 +69,6 @@ public class Team{
 
 
     // GETTERS
-
     public String getName(){
         return name;
     }
@@ -82,6 +85,7 @@ public class Team{
         return yearLast;
     }
 
+    // utility function
     public TeamSeason getTeamSeason(Team team) {
         for (TeamSeason ts : seasons) {
             if (ts.getTeam().equals(team)) return ts;
@@ -93,6 +97,7 @@ public class Team{
         return this.TeamId;
     }
 
+    // Compare Team objects
 	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof Team)){

@@ -7,9 +7,6 @@ import java.sql.ResultSet;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-// import java.util.HashSet;
-// import java.util.Map;
-// import java.util.Set;
 import java.sql.SQLException;
 
 import bo.BattingStats;
@@ -24,16 +21,16 @@ import dataaccesslayer.HibernateUtil;
 
 public class Convert {
 
+	// Define Connection Details (to LAMP VM)
 	static Connection conn;
 	static final String MYSQL_CONN_URL = "jdbc:mysql://163.11.236.96/mlb?"
     + "verifyServerCertificate=false&useSSL=true&"
     + "useLegacyDatetimeCode=false&serverTimezone=America/New_York&"
-    + "user=root&password=password";  
-	//static Map<String, Team> teams = new HashMap<String, Team>();
-	//static Map<String, TeamSeason> teamSeasons = new HashMap<String, TeamSeason>();
+    + "user=root&password=password";
 
 	public static void main(String[] args) {
 		try {
+			// Establish Connection to LAMP Server and convert data to MSSQL ORM Format
 			long startTime = System.currentTimeMillis();
 			conn = DriverManager.getConnection(MYSQL_CONN_URL);
 			convert();
@@ -55,6 +52,8 @@ public class Convert {
 
 	private static void convert() {
 		try {
+
+			// Retrieve data from LAMP Server
 			HashMap<String,Player> players = getPlayers();
 			System.out.println("Players Retrieved.");
 			HashMap<String, Team> teams = getTeams();
@@ -65,9 +64,12 @@ public class Convert {
 			System.out.println("Positions Retrieved.");
 			addSeasons(players, teams);
 			System.out.println("Seasons Retrieved.");
-			// for (Player p : players.values()) {
-			// 	HibernateUtil.persistPlayer(p);
-			// }
+
+			// Persist data to Windows VM (MSSQL) using HibernateUtil
+			// Persist Players
+			for (Player p : players.values()) {
+				HibernateUtil.persistPlayer(p);
+			}
 			System.out.println("Persisted Players.");
 			
 			// Persist Teams.
@@ -75,21 +77,28 @@ public class Convert {
 				HibernateUtil.persistTeam(t);
 			}
 			System.out.println("Persisted teams.");
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	// Retrieve Teams from LAMP Server
 	public static HashMap<String, Team> getTeams() throws SQLException {
+
+		// Define a Team hashmap to throw Team data into
 		HashMap<String, Team> teams = new HashMap<String, Team>();
 
+		// Create a prepared statement and execute
 		PreparedStatement ps = conn.prepareStatement("select distinct " +
 				"teamID, name, lgID " +
 				"from Teams");
 		ResultSet rs = ps.executeQuery();
 		
+		// Sort through the data
 		while (rs.next()) {
+
 			String team = rs.getString("teamID");
 			String teamName = rs.getString("name");
 			String league = rs.getString("lgID");
@@ -101,6 +110,7 @@ public class Convert {
 								|| teamName.isEmpty())
 				continue;
 
+			// Create a new prepared statement and execute in order to find the yearFounded for a given team
 			PreparedStatement ps1 = conn.prepareStatement("select " +
 				"min(yearID) as year " +
 				"from Teams " +
@@ -110,9 +120,11 @@ public class Convert {
 				yearFounded = rs1.getInt("year");
 			}
 
+			// Close above connection
 			rs1.close();
 			ps1.close();
 
+			// Create a new prepared statement and execute in order to find the yearLast for a given team
 			PreparedStatement ps2 = conn.prepareStatement("select " +
 				"max(yearID) as year " +
 				"from Teams " +
@@ -122,9 +134,11 @@ public class Convert {
 				yearLast = rs2.getInt("year");
 			}
 
+			// Close above connection
 			rs2.close();
 			ps2.close();
 
+			// Create a new Team object and push it into the hashmap
 			Team t = new Team();
 			t.setName(teamName);
 			t.setLeague(league);
@@ -134,19 +148,25 @@ public class Convert {
 			teams.put(team, t);
 		}
 
+		// Close Connection
 		rs.close();
 		ps.close();
 
 		return teams;
 	}
 	
+	// Add Seasons to each Team object stored
 	private static void addTeamSeasons(HashMap<String, Team> teams) throws SQLException {
         try {
+
+			// Create a prepared statement and execute
 			PreparedStatement ps = conn.prepareStatement("select " + 
 					"teamID, yearID, sum(G) as gamesPlayed, sum(W) as wins, sum(L) as losses, Rank, attendance " +
 					"from Teams " +
 					"group by teamID, yearID, Rank, attendance");
 			ResultSet rs = ps.executeQuery();
+
+			// Sort through the data
 			while (rs.next()) {
 				String team = rs.getString("teamID");
 				int yid = rs.getInt("yearID");
@@ -156,6 +176,7 @@ public class Convert {
 				int rank = rs.getInt("Rank");
 				int att = rs.getInt("attendance");
 
+				// Grab the team related to the current season being looked at
 				Team t = teams.get(team);
 				if (t != null) {
 					TeamSeason s = new TeamSeason(t, yid);
@@ -166,6 +187,7 @@ public class Convert {
 					s.setRank(rank);
 					s.setTotalAttendance(att);
 					
+					// Add the season to the team
 					t.addSeason(s);
 				}
 			}
@@ -175,6 +197,7 @@ public class Convert {
 		}
 	}
 	
+	// Retrieve Players from LAMP Server
 	public static HashMap<String, Player> getPlayers() throws SQLException {
 		HashMap<String, Player> players = new HashMap<String, Player>();
 		PreparedStatement ps = conn.prepareStatement("select " + 
@@ -289,6 +312,7 @@ public class Convert {
 		return d;
 	}
 	
+	// Add Positions to Players
 	public static void addPositions(HashMap<String, Player> players) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select " +
@@ -309,13 +333,17 @@ public class Convert {
 		}
 	}
 
+	// Add Seasons to Players and add Players to TeamSeasons
 	public static void addSeasons(HashMap<String, Player> players, HashMap<String, Team> teams) {
 		try {
+
+			// Create a prepared statement and execute
 			PreparedStatement ps = conn.prepareStatement("select " + 
 					"playerID, yearID, teamID, lgID, sum(G) as gamesPlayed " + 
 					"from Batting " + 
 					"group by playerID, yearID, teamID, lgID;");
 			ResultSet rs = ps.executeQuery();
+
 			while (rs.next()) {
 				int yid = rs.getInt("yearID");
 				String pid = rs.getString("playerID");
@@ -325,9 +353,9 @@ public class Convert {
 				if (p != null) {
 					PlayerSeason s = p.getPlayerSeason(yid);
 					TeamSeason ts = t.getTeamSeason(t);
+
 					// it is possible to see more than one of these per player if he switched teams
 					// set all of these attrs the first time we see this playerseason
-
 					if (s == null) {
 						s = new PlayerSeason(p,yid);
 						s.setGamesPlayed(rs.getInt("gamesPlayed"));	
@@ -346,6 +374,8 @@ public class Convert {
 					
 				}
 			}
+
+			// Add other related data to players
 			System.out.println("PlayerSeasons Retrieved.");
 			addSalaries(players);
 			System.out.println("Salaries Retrieved.");
@@ -358,14 +388,17 @@ public class Convert {
 			addCatchingStats(players);
 			System.out.println("CatchingStats Retrieved.");
 				
+			// Close Connection
 			rs.close();
 			ps.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
+	// Add Salaries to Players
 	public static double addSalaries(HashMap<String, Player> players) {
 		double salary = 0;
 		try {
@@ -394,6 +427,7 @@ public class Convert {
 		return salary;
 	}
 
+	// Add Batting Stats to Players
 	public static void addBattingStats(HashMap<String, Player> players) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select "	+
@@ -445,6 +479,7 @@ public class Convert {
 		}
 	}
 	
+	// Add Fielding Stats to Players
 	public static void addFieldingStats(HashMap<String, Player> players) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select " +
@@ -476,6 +511,7 @@ public class Convert {
 		}
 	}
 	
+	// Add Pitching Stats to Players
 	public static void addPitchingStats(HashMap<String, Player> players) {
 		try {
 			PreparedStatement ps = conn.prepareStatement("select " +
@@ -525,6 +561,7 @@ public class Convert {
 		}
 	}
 	
+	// Add Catching Stats to Players
 	public static void addCatchingStats(HashMap<String, Player> players) {
 		PreparedStatement ps = null;
 		try {

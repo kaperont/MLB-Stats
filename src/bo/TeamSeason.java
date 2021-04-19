@@ -1,3 +1,14 @@
+//////////////////////////// TEAMSEASON CLASS ////////////////////////////
+//      This is the TeamSeason class that contains data related to MLB  //
+//      Teams and the Seasons related to them. This also contains a     //
+//      sub-table, teamseasonplayer, that connects the data between     //
+//      Teams, Seasons, and Players together.                           //
+//                                                                      //
+//      Data includes players (roster), team, teamYear, gamesPlayed,    //
+//      wins, losses, rank, and totalAttendance.                        //
+//////////////////////////// TEAMSEASON CLASS ////////////////////////////
+
+
 package bo;
 
 import java.io.Serializable;
@@ -5,22 +16,15 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
-//import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.ManyToMany;
 import javax.persistence.FetchType;
-import javax.persistence.CascadeType;
 import javax.persistence.JoinTable;
-//import javax.persistence.OneToOne;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @SuppressWarnings("serial")
 @Entity(name = "teamseason")
@@ -39,6 +43,8 @@ public class TeamSeason implements Serializable {
         inverseJoinColumns={
             @JoinColumn(name="playerId", insertable = false, updatable = false)})
     Set<Player> players = new HashSet<Player>();
+
+    // Define what a TeamSeasonId looks like.
     @Embeddable
     static class TeamSeasonId implements Serializable {
         @ManyToOne
@@ -53,6 +59,7 @@ public class TeamSeason implements Serializable {
 				return false;
 			}
 			TeamSeasonId other = (TeamSeasonId)obj;
+            
 			// in order for two different object of this type to be equal,
 			// they must be for the same year and for the same player
 			return (this.team==other.team && this.teamYear==other.teamYear);
@@ -67,6 +74,7 @@ public class TeamSeason implements Serializable {
 		}
     }
 
+    // Add Columns to Table
     @Column
     int gamesPlayed;
     @Column
@@ -78,6 +86,7 @@ public class TeamSeason implements Serializable {
     @Column
     int totalAttendance;
 
+    // CONSTRUCTORS
     public TeamSeason() {}
 
     public TeamSeason(Team t, Integer year){

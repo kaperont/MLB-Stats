@@ -102,6 +102,7 @@ public class HibernateUtil {
 		return list;
 	}
 	
+	// Persist Players to Database
 	public static boolean persistPlayer(Player p) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = session.getTransaction();
@@ -119,12 +120,14 @@ public class HibernateUtil {
 		return true;
 	}
 
+	// Persist Teams to Database
 	public static boolean persistTeam(Team t){
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = session.getTransaction();
 		try {
+			// saveOrUpdate(t) saves or updates an existing team to the database.
 			tx.begin();
-			session.save(t);
+			session.saveOrUpdate(t);
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();
