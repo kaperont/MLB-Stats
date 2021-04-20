@@ -76,7 +76,29 @@ public class HibernateUtil {
 		return p;
 	}
 	
-	
+	public static Team retrieveTeamById(Integer id) {
+    	Team t = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			tx.begin();
+			org.hibernate.Query query;
+			query = session.createQuery("from bo.Team where id = :id ");
+		    query.setParameter("id", id);
+		    if (query.list().size()>0) {
+		    	t = (Team) query.list().get(0);
+		    	Hibernate.initialize(t.getSeasons());
+		    }
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return t;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static List<Player> retrievePlayersByName(String nameQuery, Boolean exactMatch) {
         List<Player> list=null;
@@ -89,6 +111,31 @@ public class HibernateUtil {
 				query = session.createQuery("from bo.Player where name = :name ");
 			} else {
 				query = session.createQuery("from bo.Player where name like '%' + :name + '%' ");
+			}
+		    query.setParameter("name", nameQuery);
+		    list = query.list();
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<Team> retrieveTeamByName(String nameQuery, Boolean exactMatch) {
+		List<Team> list=null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			tx.begin();
+			org.hibernate.Query query;
+			if (exactMatch) {
+				query = session.createQuery("from bo.Team where name = :name ");
+			} else {
+				query = session.createQuery("from bo.Team where name like '%' + :name + '%' ");
 			}
 		    query.setParameter("name", nameQuery);
 		    list = query.list();
@@ -124,7 +171,7 @@ public class HibernateUtil {
 		Transaction tx = session.getTransaction();
 		try {
 			tx.begin();
-			session.save(t);
+			session.saveOrUpdate(t);
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();

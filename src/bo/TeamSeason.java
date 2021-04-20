@@ -12,15 +12,15 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+//import javax.persistence.OneToMany;
 import javax.persistence.ManyToMany;
 import javax.persistence.FetchType;
 import javax.persistence.CascadeType;
 import javax.persistence.JoinTable;
 //import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+//import org.hibernate.annotations.Fetch;
+//import org.hibernate.annotations.FetchMode;
 
 @SuppressWarnings("serial")
 @Entity(name = "teamseason")
@@ -28,17 +28,6 @@ public class TeamSeason implements Serializable {
 
     @EmbeddedId
     TeamSeasonId id;
-
-    // The @JoinTable annotation used within TeamSeason.java. There is no need to create a TeamSeasonPlayer B.O.
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "teamseasonplayer", 
-        joinColumns={
-            @JoinColumn(name="teamId", insertable = false, updatable = false), 
-            @JoinColumn(name="year",  insertable = false, updatable = false)}, 
-        inverseJoinColumns={
-            @JoinColumn(name="playerId", insertable = false, updatable = false)})
-    Set<Player> players = new HashSet<Player>();
     @Embeddable
     static class TeamSeasonId implements Serializable {
         @ManyToOne
@@ -66,6 +55,17 @@ public class TeamSeason implements Serializable {
 			return hash;
 		}
     }
+
+    // The @JoinTable annotation used within TeamSeason.java. There is no need to create a TeamSeasonPlayer B.O.
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @JoinTable(name = "teamseasonplayer", 
+        joinColumns={
+            @JoinColumn(name="teamId", insertable = false, updatable = false), 
+            @JoinColumn(name="year",  insertable = false, updatable = false)}, 
+        inverseJoinColumns={
+            @JoinColumn(name="playerId", insertable = false, updatable = false)})
+    Set<Player> players = new HashSet<Player>();
 
     @Column
     int gamesPlayed;
@@ -100,23 +100,23 @@ public class TeamSeason implements Serializable {
         return this.id.team;
     }
 
-    public int getGamesPlayed(){
+    public Integer getGamesPlayed(){
         return gamesPlayed;
     }
 
-    public int getWins(){
+    public Integer getWins(){
         return wins;
     }
 
-    public int getLosses(){
+    public Integer getLosses(){
         return losses;
     }
 
-    public int getRank(){
+    public Integer getRank(){
         return rank;
     }
 
-    public int getTotalAttendance(){
+    public Integer getTotalAttendance(){
         return totalAttendance;
     }
 
@@ -174,11 +174,11 @@ public class TeamSeason implements Serializable {
 		return this.getId().hashCode();
 	}
 
-	public static Comparator<TeamSeason> playerSeasonsComparator = new Comparator<TeamSeason>() {
+	public static Comparator<TeamSeason> teamSeasonsComparator = new Comparator<TeamSeason>() {
 
-		public int compare(TeamSeason ps1, TeamSeason ps2) {
-			Integer year1 = ps1.getYear();
-			Integer year2 = ps2.getYear();
+		public int compare(TeamSeason ts1, TeamSeason ts2) {
+			Integer year1 = ts1.getYear();
+			Integer year2 = ts2.getYear();
 			return year1.compareTo(year2);
 		}
 

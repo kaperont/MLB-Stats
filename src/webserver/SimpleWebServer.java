@@ -7,7 +7,6 @@ package webserver;
  **/
 import java.net.ServerSocket;
 import java.net.Socket;
-
 class SimpleWebServer{
     public static int SERVER_PORT = 8080;    
     public static String WWW_ROOT = "www/";
