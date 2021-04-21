@@ -14,7 +14,7 @@ import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 
 import bo.Player;
 import bo.Team;
-
+import bo.TeamSeason;
 
 public class HibernateUtil {
 
@@ -45,13 +45,13 @@ public class HibernateUtil {
 		return sessionFactory;
 	}
   
-	public static void stopConnectionProvider() {
-		final SessionFactoryImplementor sessionFactoryImplementor = (SessionFactoryImplementor) sessionFactory;
-		ConnectionProvider connectionProvider = sessionFactoryImplementor.getConnectionProvider();
-		if (Stoppable.class.isInstance(connectionProvider)) {
-			((Stoppable) connectionProvider).stop();
-		}        
-	}
+  public static void stopConnectionProvider() {
+    final SessionFactoryImplementor sessionFactoryImplementor = (SessionFactoryImplementor) sessionFactory;
+    ConnectionProvider connectionProvider = sessionFactoryImplementor.getConnectionProvider();
+    if (Stoppable.class.isInstance(connectionProvider)) {
+        ((Stoppable) connectionProvider).stop();
+    }        
+}
 	
 	public static Player retrievePlayerById(Integer id) {
         Player p=null;
@@ -64,7 +64,7 @@ public class HibernateUtil {
 		    query.setParameter("id", id);
 		    if (query.list().size()>0) {
 		    	p = (Player) query.list().get(0);
-		    	Hibernate.initialize(p.getSeasons());
+		    	Hibernate.initialize(p.getTeamSeasons());
 		    }
 			tx.commit();
 		} catch (Exception e) {
@@ -75,30 +75,7 @@ public class HibernateUtil {
 		}
 		return p;
 	}
-
-	// Grab Teams by ID
-	public static Team retrieveTeamById(Integer id) {
-        Team t=null;
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		Transaction tx = session.getTransaction();
-		try {
-			tx.begin();
-			org.hibernate.Query query;
-			query = session.createQuery("from bo.Team where id = :id ");
-		    query.setParameter("id", id);
-		    if (query.list().size()>0) {
-		    	t = (Team) query.list().get(0);
-		    	Hibernate.initialize(t.getSeasons());
-		    }
-			tx.commit();
-		} catch (Exception e) {
-			tx.rollback();
-			e.printStackTrace();
-		} finally {
-			if (session.isOpen()) session.close();
-		}
-		return t;
-	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public static List<Player> retrievePlayersByName(String nameQuery, Boolean exactMatch) {
@@ -123,6 +100,53 @@ public class HibernateUtil {
 			if (session.isOpen()) session.close();
 		}
 		return list;
+	}
+	
+	public static boolean persistPlayer(Player p) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			tx.begin();
+			session.saveOrUpdate(p);
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return true;
+	}
+	
+	public static boolean persistTeam(Team t) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			tx.begin();
+			session.save(t);
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return true;
+	}
+	
+	public static boolean flushObjects() {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			session.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return true;
 	}
 
 	// Grab Teams by name
@@ -150,55 +174,29 @@ public class HibernateUtil {
 		}
 		return list;
 	}
-	
-	// Persist Players to Database
-	public static boolean persistPlayer(Player p) {
+
+	// Grab Teams by ID
+	public static Team retrieveTeamById(Integer id) {
+        Team t=null;
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction tx = session.getTransaction();
 		try {
 			tx.begin();
-			session.save(p);
+			org.hibernate.Query query;
+			query = session.createQuery("from bo.Team where id = :id ");
+		    query.setParameter("id", id);
+		    if (query.list().size()>0) {
+		    	t = (Team) query.list().get(0);
+		    	Hibernate.initialize(t.getSeasons());
+		    }
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();
 			e.printStackTrace();
-			return false;
 		} finally {
 			if (session.isOpen()) session.close();
 		}
-		return true;
+		return t;
 	}
-
-	// Persist Teams to Database
-	public static boolean persistTeam(Team t){
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		Transaction tx = session.getTransaction();
-		try {
-			// saveOrUpdate(t) saves or updates an existing team to the database.
-			tx.begin();
-			session.saveOrUpdate(t);
-			tx.commit();
-		} catch (Exception e) {
-			tx.rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if (session.isOpen()) session.close();
-		}
-		return true;
-	}
-	
-	public static boolean flushObjects() {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		try {
-			session.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			if (session.isOpen()) session.close();
-		}
-		return true;
-	}
-
+	// retrieveTeamSeasonById(Integer teamId, Integer year)	
 }
