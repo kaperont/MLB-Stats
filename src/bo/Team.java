@@ -93,6 +93,10 @@ public class Team{
         return null;
     }
 
+    public Set<TeamSeason> getSeasons(){
+        return seasons;
+    }
+
     public Integer getId(){
         return this.TeamId;
     }

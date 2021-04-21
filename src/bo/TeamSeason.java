@@ -109,23 +109,23 @@ public class TeamSeason implements Serializable {
         return this.id.team;
     }
 
-    public int getGamesPlayed(){
+    public Integer getGamesPlayed(){
         return gamesPlayed;
     }
 
-    public int getWins(){
+    public Integer getWins(){
         return wins;
     }
 
-    public int getLosses(){
+    public Integer getLosses(){
         return losses;
     }
 
-    public int getRank(){
+    public Integer getRank(){
         return rank;
     }
 
-    public int getTotalAttendance(){
+    public Integer getTotalAttendance(){
         return totalAttendance;
     }
 
@@ -183,11 +183,11 @@ public class TeamSeason implements Serializable {
 		return this.getId().hashCode();
 	}
 
-	public static Comparator<TeamSeason> playerSeasonsComparator = new Comparator<TeamSeason>() {
+	public static Comparator<TeamSeason> teamSeasonsComparator = new Comparator<TeamSeason>() {
 
-		public int compare(TeamSeason ps1, TeamSeason ps2) {
-			Integer year1 = ps1.getYear();
-			Integer year2 = ps2.getYear();
+		public int compare(TeamSeason ts1, TeamSeason ts2) {
+			Integer year1 = ts1.getYear();
+			Integer year2 = ts2.getYear();
 			return year1.compareTo(year2);
 		}
 
