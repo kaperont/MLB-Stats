@@ -96,22 +96,24 @@ public class TeamController extends BaseController {
         teamTable[1][2] = t.getYearLast().toString();
         view.buildTable(teamTable);
 
-        String[][] seasonTable = new String[seasons.size()+1][6];
+        String[][] seasonTable = new String[seasons.size()+1][7];
         seasonTable[0][0] = "Year";
-        seasonTable[0][1] = "Games Played";
-        seasonTable[0][2] = "Wins";
-        seasonTable[0][3] = "Losses";
-        seasonTable[0][4] = "Rank";
-        seasonTable[0][5] = "Total Attendance";
+        seasonTable[0][1] = "Roster";
+        seasonTable[0][2] = "Games Played";
+        seasonTable[0][3] = "Wins";
+        seasonTable[0][4] = "Losses";
+        seasonTable[0][5] = "Rank";
+        seasonTable[0][6] = "Total Attendance";
         int i = 0;
         for (TeamSeason ts: list) {
         	i++;
         	seasonTable[i][0] = ts.getYear().toString();
-        	seasonTable[i][1] = ts.getGamesPlayed().toString();
-        	seasonTable[i][2] = ts.getWins().toString();
-        	seasonTable[i][3] = ts.getLosses().toString();
-        	seasonTable[i][4] = ts.getRank().toString();
-        	seasonTable[i][5] = ts.getTotalAttendance().toString();
+            seasonTable[i][1] = "roster";
+        	seasonTable[i][2] = ts.getGamesPlayed().toString();
+        	seasonTable[i][3] = ts.getWins().toString();
+        	seasonTable[i][4] = ts.getLosses().toString();
+        	seasonTable[i][5] = ts.getRank().toString();
+        	seasonTable[i][6] = ts.getTotalAttendance().toString();
         }
         view.buildTable(seasonTable);
     }
