@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.transaction.Transactional;
 
 @SuppressWarnings("serial")
 @Entity(name = "teamseason")
@@ -129,6 +130,7 @@ public class TeamSeason implements Serializable {
 		this.totalAttendance = totalAttendance;
 	}
 
+	@Transactional
 	public Set<Player> getPlayers() {
 		return players;
 	}

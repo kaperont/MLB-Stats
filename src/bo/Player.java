@@ -1,5 +1,6 @@
 package bo;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -228,5 +229,13 @@ public class Player {
 		return hash;
 	}
 	
+	public static Comparator<Player> playerComparator = new Comparator<Player>() {
+        @Override
+        public int compare(Player o1, Player o2) {
+            String name1 = o1.getName();
+            String name2 = o2.getName();
+            return name1.compareTo(name2);
+        }
+    };
 	
 }
