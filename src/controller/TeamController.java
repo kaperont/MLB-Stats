@@ -5,7 +5,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import view.TeamView;
+import bo.Player;
+import bo.PlayerSeason;
 import bo.Team;
 import bo.TeamSeason;
 import dataaccesslayer.HibernateUtil;
@@ -29,7 +36,9 @@ public class TeamController extends BaseController {
             processSearch();
         } else if (action.equalsIgnoreCase(ACT_DETAIL)) {
             processDetails();
-        } 
+        } else if (action.equalsIgnoreCase(ACT_ROSTER)){
+            processRoster();
+        }
     }
 
     protected void processSearchForm() {
@@ -57,6 +66,21 @@ public class TeamController extends BaseController {
         Team t = (Team) HibernateUtil.retrieveTeamById(Integer.valueOf(id));
         if (t == null) return;
         buildSearchResultsTableTeamDetail(t);
+        view.buildLinkToSearch();
+    }
+
+    protected final void processRoster() {
+        String id = keyVals.get("id");
+        int teamId = Integer.parseInt(id.substring(5));
+        int year = Integer.parseInt(id.substring(0, 4));
+
+        if (id == null) {
+            return;
+        }
+
+        TeamSeason ts = (TeamSeason) HibernateUtil.retrieveTeamSeasonById(teamId, year);
+        if (ts == null) return;
+        buildSearchResultsTableTeamRoster(ts);
         view.buildLinkToSearch();
     }
 
@@ -106,9 +130,13 @@ public class TeamController extends BaseController {
         seasonTable[0][6] = "Total Attendance";
         int i = 0;
         for (TeamSeason ts: list) {
+            String idYear = ts.getYear().toString();
+            String teamId = ts.getTeam().getId().toString();
+            String insert = idYear + " " + teamId;
+
         	i++;
         	seasonTable[i][0] = ts.getYear().toString();
-            seasonTable[i][1] = "roster";
+            seasonTable[i][1] = view.encodeLink(new String[]{"id"}, new String[]{insert}, "roster", ACT_ROSTER, SSP_TEAM);
         	seasonTable[i][2] = ts.getGamesPlayed().toString();
         	seasonTable[i][3] = ts.getWins().toString();
         	seasonTable[i][4] = ts.getLosses().toString();
@@ -116,6 +144,64 @@ public class TeamController extends BaseController {
         	seasonTable[i][6] = ts.getTotalAttendance().toString();
         }
         view.buildTable(seasonTable);
+    }
+
+
+    private void buildSearchResultsTableTeamRoster(TeamSeason ts) {
+        Team t = ts.getTeam();
+        int year = ts.getYear();
+        String printYear = ts.getYear().toString();
+
+        String[][] teamTable = new String[2][3];
+        teamTable[0][0] = "Name";
+        teamTable[0][1] = "League";
+        teamTable[0][2] = "Year";
+        teamTable[1][0] = t.getName();
+        teamTable[1][1] = t.getLeague();
+        teamTable[1][2] = printYear;
+        view.buildTable(teamTable);
+
+        Set<Player> players = ts.getPlayers();
+
+        if(!players.isEmpty()){
+
+            List<Player> playerList = new ArrayList<Player>(players);
+            Collections.sort(playerList, Player.playerComparator);
+
+            String[][] rosterTable = new String[playerList.size()+1][3];
+            rosterTable[0][0] = "Name";
+            rosterTable[0][1] = "Games Played";
+            rosterTable[0][2] = "Salary";
+
+            int i = 1;
+            for (Player p: playerList) {
+
+                Set<PlayerSeason> psSet = p.getSeasons();
+
+                if(!psSet.isEmpty()){
+                    List<PlayerSeason> psList = new ArrayList<PlayerSeason>(psSet);
+                    Collections.sort(psList, PlayerSeason.playerSeasonsComparator);
+
+                    for(PlayerSeason ps: psList){
+                        int psYear = ps.getYear();
+
+                        if(psYear == year){
+                            rosterTable[i][0] = p.getName();
+                            rosterTable[i][1] = ps.getGamesPlayed().toString();
+                            rosterTable[i][2] = DOLLAR_FORMAT.format(ps.getSalary());
+                            i++;
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            view.buildTable(rosterTable);
+
+        }
+
+        
     }
 
 }
