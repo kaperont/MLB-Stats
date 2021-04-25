@@ -5,8 +5,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import view.TeamView;
 import bo.Player;
+import bo.PlayerSeason;
 import bo.Team;
 import bo.TeamSeason;
 import dataaccesslayer.HibernateUtil;
@@ -66,15 +72,15 @@ public class TeamController extends BaseController {
     protected final void processRoster() {
         String id = keyVals.get("id");
         int teamId = Integer.parseInt(id.substring(5));
-        String year = id.substring(0, 4);
+        int year = Integer.parseInt(id.substring(0, 4));
 
         if (id == null) {
             return;
         }
 
-        Team t = (Team) HibernateUtil.retrieveTeamById(teamId);
-        if (t == null) return;
-        buildSearchResultsTableTeamRoster(t, year);
+        TeamSeason ts = (TeamSeason) HibernateUtil.retrieveTeamSeasonById(teamId, year);
+        if (ts == null) return;
+        buildSearchResultsTableTeamRoster(ts);
         view.buildLinkToSearch();
     }
 
@@ -141,10 +147,10 @@ public class TeamController extends BaseController {
     }
 
 
-    private void buildSearchResultsTableTeamRoster(Team t, String year) {
-        Set<TeamSeason> seasons = t.getSeasons();
-        List<TeamSeason> list = new ArrayList<TeamSeason>(seasons);
-        Collections.sort(list, TeamSeason.teamSeasonsComparator);
+    private void buildSearchResultsTableTeamRoster(TeamSeason ts) {
+        Team t = ts.getTeam();
+        int year = ts.getYear();
+        String printYear = ts.getYear().toString();
 
         String[][] teamTable = new String[2][3];
         teamTable[0][0] = "Name";
@@ -152,38 +158,43 @@ public class TeamController extends BaseController {
         teamTable[0][2] = "Year";
         teamTable[1][0] = t.getName();
         teamTable[1][1] = t.getLeague();
-        teamTable[1][2] = year;
+        teamTable[1][2] = printYear;
         view.buildTable(teamTable);
 
-        TeamSeason tSeason = null;
-        for (TeamSeason ts: list) {
-            int idYear = ts.getYear();
-            int intYear = Integer.parseInt(year);
-            if (idYear == intYear) {
-                tSeason = ts;
-                break;
-            }
-        }
-
-        Set<Player> players = tSeason.getPlayers(); //yoski broski my dudesssss 
+        Set<Player> players = ts.getPlayers();
 
         if(!players.isEmpty()){
 
             List<Player> playerList = new ArrayList<Player>(players);
             Collections.sort(playerList, Player.playerComparator);
 
-            String[][] rosterTable = new String[seasons.size()+1][1];
+            String[][] rosterTable = new String[playerList.size()+1][3];
             rosterTable[0][0] = "Name";
             rosterTable[0][1] = "Games Played";
             rosterTable[0][2] = "Salary";
 
-            int i = 0;
+            int i = 1;
             for (Player p: playerList) {
-                rosterTable[i][0] = p.getName();
-                rosterTable[i][1] = "24";
-                rosterTable[i][2] = "1000000";
 
-                i++;
+                Set<PlayerSeason> psSet = p.getSeasons();
+
+                if(!psSet.isEmpty()){
+                    List<PlayerSeason> psList = new ArrayList<PlayerSeason>(psSet);
+                    Collections.sort(psList, PlayerSeason.playerSeasonsComparator);
+
+                    for(PlayerSeason ps: psList){
+                        int psYear = ps.getYear();
+
+                        if(psYear == year){
+                            rosterTable[i][0] = p.getName();
+                            rosterTable[i][1] = ps.getGamesPlayed().toString();
+                            rosterTable[i][2] = DOLLAR_FORMAT.format(ps.getSalary());
+                            i++;
+                            break;
+                        }
+                    }
+                }
+
             }
 
             view.buildTable(rosterTable);

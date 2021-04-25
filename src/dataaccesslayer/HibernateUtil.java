@@ -1,6 +1,9 @@
 package dataaccesslayer;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -198,5 +201,42 @@ public class HibernateUtil {
 		}
 		return t;
 	}
+
 	// retrieveTeamSeasonById(Integer teamId, Integer year)	
+	public static TeamSeason retrieveTeamSeasonById(Integer teamId, Integer year) {
+        TeamSeason ts=null;
+
+		Team t = retrieveTeamById(teamId);
+		Set<TeamSeason> seasons = t.getSeasons();
+        List<TeamSeason> list = new ArrayList<TeamSeason>(seasons);
+        Collections.sort(list, TeamSeason.teamSeasonsComparator);
+
+        for (TeamSeason tSeason: list) {
+            int idYear = tSeason.getYear();
+            if (idYear == year) {
+                ts = tSeason;
+                break;
+            }
+		}
+        
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction tx = session.getTransaction();
+		try {
+			tx.begin();
+			org.hibernate.Query query;
+			query = session.createQuery("from bo.TeamSeason where id = :id ");
+		    query.setParameter("id", ts.getId());
+		    if (query.list().size()>0) {
+		    	ts = (TeamSeason) query.list().get(0);
+		    	Hibernate.initialize(ts.getPlayers());
+		    }
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
+		} finally {
+			if (session.isOpen()) session.close();
+		}
+		return ts;
+	}
 }

@@ -1,6 +1,9 @@
 package view;
 
 public class TeamView extends BaseView {
+
+    protected String teamName = "";
+    
     public TeamView() {
         title = "Team";
     }
