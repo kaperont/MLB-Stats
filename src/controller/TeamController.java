@@ -50,7 +50,6 @@ public class TeamController extends BaseController {
         List<Team> bos = HibernateUtil.retrieveTeamsByName(name, exact);
         view.printSearchResultsMessage(name, exact);
         buildSearchResultsTablePlayer(bos);
-        view.buildLinkToSearch();
     }
 
     protected final void processDetails() {
@@ -61,7 +60,6 @@ public class TeamController extends BaseController {
         Team t = (Team) HibernateUtil.retrieveTeamById(Integer.valueOf(id));
         if (t == null) return;
         buildSearchResultsTableTeamDetail(t);
-        view.buildLinkToSearch();
     }
 
     protected final void processRoster() {
@@ -76,7 +74,6 @@ public class TeamController extends BaseController {
         TeamSeason ts = (TeamSeason) HibernateUtil.retrieveTeamSeasonById(teamId, year);
         if (ts == null) return;
         buildSearchResultsTableTeamRoster(ts);
-        view.buildLinkToSearch();
     }
 
     private void buildSearchResultsTablePlayer(List<Team> bos) {
@@ -140,6 +137,7 @@ public class TeamController extends BaseController {
         	seasonTable[i][6] = ts.getTotalAttendance().toString();
         }
         
+        view.appendName(t.getName());
         view.appendScrollBeginning();
         view.buildTable(teamTable);
         view.buildTable(seasonTable);
@@ -201,6 +199,7 @@ public class TeamController extends BaseController {
 
             teamTable[1][3] = DOLLAR_FORMAT.format(playerPayroll);
 
+            view.appendName(t.getName());
             view.appendScrollBeginning();
             view.buildTable(teamTable);
             view.buildTable(rosterTable);

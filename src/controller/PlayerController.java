@@ -48,7 +48,6 @@ public class PlayerController extends BaseController {
         List<Player> bos = HibernateUtil.retrievePlayersByName(name, exact);
         view.printSearchResultsMessage(name, exact);
         buildSearchResultsTablePlayer(bos);
-        view.buildLinkToSearch();
     }
 
     protected final void processDetails() {
@@ -59,7 +58,6 @@ public class PlayerController extends BaseController {
         Player p = (Player) HibernateUtil.retrievePlayerById(Integer.valueOf(id));
         if (p == null) return;
         buildSearchResultsTablePlayerDetail(p);
-        view.buildLinkToSearch();
     }
 
     private void buildSearchResultsTablePlayer(List<Player> bos) {
@@ -193,6 +191,7 @@ public class PlayerController extends BaseController {
             seasonTable[i][7] = ps.getBattingStats().getHomeRuns().toString();
         }
 
+        view.appendName(p.getName());
         view.appendScrollBeginning();
         view.buildTable(playerTable);
         view.buildTable(seasonTable);

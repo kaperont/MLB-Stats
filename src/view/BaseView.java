@@ -26,12 +26,21 @@ public abstract class BaseView {
         sb.append("</TITLE>");
         sb.append("</HEAD>\r\n");
         sb.append("<BODY>\r\n");
+        
         sb.append("<div id=\"header\" >\r\n");
         sb.append("<span id=\"header-text\">Major League Baseball</span>\r\n");
-        sb.append("<a href=\"https://www.mlb.com/\">\r\n");
+        sb.append("<a href=\"index.htm\">\r\n");
         sb.append("<img id=\"mlb-pic\" src=\"./images/mlb-logo.jpg\"><br/>\r\n");
         sb.append("</a>\r\n");
-        sb.append("<a id=\"home\" href=\"index.htm\">Home</a>\r\n");
+        sb.append("<span class=\"dropdown\">\r\n");
+        sb.append("<button class=\"dropButton\">|  |  |</button>\r\n");
+        sb.append("<div class=\"dropContent\">\r\n");
+        sb.append("<a href=\"index.htm\">Home</a>\r\n");
+        sb.append("<a href=\"player.ssp?action=searchform\">Player</a>\r\n");
+        sb.append("<a href=\"team.ssp?action=searchform\">Team</a>\r\n");
+        sb.append("<a href=\"https://www.mlb.com/\" target=\"_blank\">MLB.com</a>\r\n");
+        sb.append("</div>\r\n");
+        sb.append("</span>\r\n");
         sb.append("</div>\r\n");
         sb.append("<img id=\"" + title.toLowerCase() + "\" src=\"./images/mlb-" + title.toLowerCase() + ".jpg\">\r\n");
         sb.append("<img id=\"" + title.toLowerCase() + "1\" src=\"./images/mlb-" + title.toLowerCase() + ".jpg\">\r\n");
@@ -40,15 +49,6 @@ public abstract class BaseView {
         sb.append("</BODY>\r\n");
         sb.append("</HTML>\r\n");
         return sb.toString();
-    }
-    
-    public final void buildLinkToSearch() {
-        body.append("<br/><br/>\r\n");
-        body.append("<a id=\"searchFor\" href=\"");
-        body.append(title.toLowerCase());
-        body.append(".ssp?action=searchform\">Search for another ");
-        body.append(title);
-        body.append("</a>\r\n");  
     }
     
     public final void printMessage(String msg) {
@@ -132,5 +132,9 @@ public abstract class BaseView {
     protected final String encodeURL(String s) {
         s = s.replace(" ", "+");
         return s;
+    }
+
+    public final void appendName(String name){
+        body.append("<div id=\"name-header\">" + name + "</div>\r\n");
     }
 }

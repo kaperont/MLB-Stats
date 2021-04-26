@@ -1,3 +1,8 @@
+@font-face{
+    font-family: MLB;
+    src: url(Strike-Em-Out.ttf);
+}
+
 body {
     margin: 0;
     text-decoration: none;
@@ -36,22 +41,27 @@ a {
 }
 
 #header {
-    height: 80px;
+    height: 85px;
     width: 100%;
     background-color: rgb(0, 45, 109);
     text-align: center;
 }
 
 #header-text {
+    display: inline-block;
     color: white;
-    font-size: 64px;
+    margin: auto;
+    margin-top: 20px;
+    max-width: 870px;
+    font-family: MLB;
+    font-size: 45px;
     font-weight: bold;
 }
 
 #home {
     position: absolute;
     right: .5%;
-    top: 1.3%;
+    top: 2.3%;
     background-color: rgb(243, 30, 30);
     font-size: 35px;
     font-weight: bold;
@@ -77,6 +87,7 @@ a {
 
 #player-box, #team-box {
     width: 50%;
+    top: 0px;
     height: 680px;
     position: absolute;
     display: flex;
@@ -86,17 +97,20 @@ a {
 
 #player-box {
     left: 0;
+    height: 100%;
     background-color: white;
     z-index: -1;
 }
 
 #team-box {
     right: 0;
+    height: 100%;
+    z-index: -1;
 }
 
 #players, #teams {
     width: 300px;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
     border-radius: 30px;
     padding: .8rem;
     font-size: 80px;
@@ -249,6 +263,11 @@ a {
     font-weight: bold;
 }
 
+th {
+    position: sticky;
+    top: 0;
+}
+
 .datatable tbody tr td {
     padding: .5rem;
 }
@@ -286,10 +305,71 @@ a {
 
 #containing {
     top: 10%;
-    right: -43%;
+    left: 2%;
 }
 
 #searchFor {
     top: 10%;
     right: 16%;
 }
+
+#name-header {
+    position: absolute;
+    top: 12.5%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    margin: auto;
+    text-align: center;
+    z-index: 8;
+    color: rgb(243, 30, 30);
+    font-family: MLB;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+.dropButton {
+    width: 60px;
+    height: 50px;
+    background-color: rgb(243, 30, 30);
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    padding: .6rem;
+}
+
+.dropdown {
+    position: absolute;
+    right: 3%;
+    top: 17.5px;
+    margin-bottom: 125px;
+}
+
+.dropContent {
+    display: none;
+    position: absolute;
+    background-color: rgb(0, 45, 109);
+    min-width: 90px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 110;
+}
+
+.dropContent a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropContent a:hover {background-color: #ddd; color: black;}
+
+.dropdown:hover .dropContent {display: block;}
+
+.dropdown:hover .dropButton {background-color: rgb(243, 30, 30);}
