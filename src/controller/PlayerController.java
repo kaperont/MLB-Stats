@@ -10,7 +10,6 @@ import bo.Player;
 import bo.PlayerCareerStats;
 import bo.PlayerSeason;
 import bo.TeamSeason;
-import bo.Team;
 import dataaccesslayer.HibernateUtil;
 
 public class PlayerController extends BaseController {
@@ -91,7 +90,9 @@ public class PlayerController extends BaseController {
             table[i + 1][8] = DOUBLE_FORMAT.format(stats.getBattingAverage());
             table[i + 1][9] = stats.getSteals().toString();
         }
+        view.appendScrollBeginning();
         view.buildTable(table);
+        view.appendScrollEnd();
     }
     
     private void buildSearchResultsTablePlayerDetail(Player p) {
@@ -131,7 +132,7 @@ public class PlayerController extends BaseController {
         playerTable[1][4] = formatDate(p.getDeathDay());
         playerTable[1][5] = p.getBirthCity() + ", " + p.getBirthState();
         
-        view.buildTable(playerTable);
+        
         // now for seasons
         String[][] seasonTable = new String[seasons.size()+1][8];
         seasonTable[0][0] = "Year";
@@ -191,7 +192,11 @@ public class PlayerController extends BaseController {
             seasonTable[i][6] = DOUBLE_FORMAT.format(ps.getBattingAverage());
             seasonTable[i][7] = ps.getBattingStats().getHomeRuns().toString();
         }
+
+        view.appendScrollBeginning();
+        view.buildTable(playerTable);
         view.buildTable(seasonTable);
+        view.appendScrollEnd();
     }
 
 }

@@ -19,16 +19,24 @@ public abstract class BaseView {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>\r\n");
         sb.append("<HTML>\r\n");
-        sb.append("<HEAD><TITLE>");
+        sb.append("<HEAD>\r\n");
+        sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"mlb.css\" />\r\n");
+        sb.append("<TITLE>");
         sb.append(title);
-        sb.append("</TITLE></HEAD>\r\n");
+        sb.append("</TITLE>");
+        sb.append("</HEAD>\r\n");
         sb.append("<BODY>\r\n");
-        sb.append("<h2>MLB - ");
-        sb.append(title);
-        sb.append("</h2>\r\n");
+        sb.append("<div id=\"header\" >\r\n");
+        sb.append("<span id=\"header-text\">Major League Baseball</span>\r\n");
+        sb.append("<a href=\"https://www.mlb.com/\">\r\n");
+        sb.append("<img id=\"mlb-pic\" src=\"./images/mlb-logo.jpg\"><br/>\r\n");
+        sb.append("</a>\r\n");
+        sb.append("<a id=\"home\" href=\"index.htm\">Home</a>\r\n");
+        sb.append("</div>\r\n");
+        sb.append("<img id=\"" + title.toLowerCase() + "\" src=\"./images/mlb-" + title.toLowerCase() + ".jpg\">\r\n");
+        sb.append("<img id=\"" + title.toLowerCase() + "1\" src=\"./images/mlb-" + title.toLowerCase() + ".jpg\">\r\n");
         sb.append(body);
         sb.append("<br/><br/>\r\n");
-        sb.append("<a href=\"index.htm\">Home</a>\r\n");
         sb.append("</BODY>\r\n");
         sb.append("</HTML>\r\n");
         return sb.toString();
@@ -36,9 +44,9 @@ public abstract class BaseView {
     
     public final void buildLinkToSearch() {
         body.append("<br/><br/>\r\n");
-        body.append("<a href=\"");
+        body.append("<a id=\"searchFor\" href=\"");
         body.append(title.toLowerCase());
-        body.append(".ssp?action=searchform\">Search for a ");
+        body.append(".ssp?action=searchform\">Search for another ");
         body.append(title);
         body.append("</a>\r\n");  
     }
@@ -50,7 +58,7 @@ public abstract class BaseView {
     }
     
     public final void printSearchResultsMessage(String name, boolean exact) {
-        body.append("<p>");
+        body.append("<p id=\"containing\">");
         body.append(title);
         if (exact) {
             body.append("s with name matching '");
@@ -63,7 +71,7 @@ public abstract class BaseView {
     }
 
     public final void buildTable(String[][] table) {
-        body.append("<table border=1>\r\n");
+        body.append("<table class=\"datatable\">\r\n");
         // print table header row
         body.append("<tr>");
         for (int i = 0; i < table[0].length; i++) {
@@ -83,6 +91,14 @@ public abstract class BaseView {
             body.append("</tr>\r\n");
         }
         body.append("</table>\r\n");
+    }
+
+    public final void appendScrollBeginning() {
+        body.append("<div id=\"scroll\">\r\n");
+    }
+
+    public final void appendScrollEnd() {
+        body.append("</div>\r\n");
     }
     
     /** 

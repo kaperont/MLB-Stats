@@ -5,11 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-
 import view.TeamView;
 import bo.Player;
 import bo.PlayerSeason;
@@ -74,9 +69,9 @@ public class TeamController extends BaseController {
         int teamId = Integer.parseInt(id.substring(5));
         int year = Integer.parseInt(id.substring(0, 4));
 
-        if (id == null) {
-            return;
-        }
+//        if (id == null) {
+//            return;
+//        }
 
         TeamSeason ts = (TeamSeason) HibernateUtil.retrieveTeamSeasonById(teamId, year);
         if (ts == null) return;
@@ -95,14 +90,16 @@ public class TeamController extends BaseController {
         for (int i = 0; i < bos.size(); i++) {
             Team t = bos.get(i);
             String tid = t.getId().toString();
-            table[i + 1][0] = view.encodeLink(new String[]{"id"}, new String[]{tid}, tid, ACT_DETAIL, SSP_TEAM);
-            table[i + 1][1] = t.getName();
+            table[i + 1][0] = tid;
+            table[i + 1][1] = view.encodeLink(new String[]{"id"}, new String[]{tid}, t.getName(), ACT_DETAIL, SSP_TEAM);
             table[i + 1][2] = t.getLeague();
             table[i + 1][3] = t.getYearFounded().toString();
             table[i + 1][4] = t.getYearLast().toString();
         }
 
+        view.appendScrollBeginning();
         view.buildTable(table);
+        view.appendScrollEnd();
     }
 
     private void buildSearchResultsTableTeamDetail(Team t) {
@@ -118,7 +115,6 @@ public class TeamController extends BaseController {
         teamTable[1][0] = t.getName();
         teamTable[1][1] = t.getYearFounded().toString();
         teamTable[1][2] = t.getYearLast().toString();
-        view.buildTable(teamTable);
 
         String[][] seasonTable = new String[seasons.size()+1][7];
         seasonTable[0][0] = "Year";
@@ -136,14 +132,18 @@ public class TeamController extends BaseController {
 
         	i++;
         	seasonTable[i][0] = ts.getYear().toString();
-            seasonTable[i][1] = view.encodeLink(new String[]{"id"}, new String[]{insert}, "roster", ACT_ROSTER, SSP_TEAM);
+            seasonTable[i][1] = view.encodeLink(new String[]{"id"}, new String[]{insert}, "Roster", ACT_ROSTER, SSP_TEAM);
         	seasonTable[i][2] = ts.getGamesPlayed().toString();
         	seasonTable[i][3] = ts.getWins().toString();
         	seasonTable[i][4] = ts.getLosses().toString();
         	seasonTable[i][5] = ts.getRank().toString();
         	seasonTable[i][6] = ts.getTotalAttendance().toString();
         }
+        
+        view.appendScrollBeginning();
+        view.buildTable(teamTable);
         view.buildTable(seasonTable);
+        view.appendScrollEnd();
     }
 
 
@@ -152,14 +152,14 @@ public class TeamController extends BaseController {
         int year = ts.getYear();
         String printYear = ts.getYear().toString();
 
-        String[][] teamTable = new String[2][3];
+        String[][] teamTable = new String[2][4];
         teamTable[0][0] = "Name";
         teamTable[0][1] = "League";
         teamTable[0][2] = "Year";
+        teamTable[0][3] = "Player Payroll";
         teamTable[1][0] = t.getName();
         teamTable[1][1] = t.getLeague();
         teamTable[1][2] = printYear;
-        view.buildTable(teamTable);
 
         Set<Player> players = ts.getPlayers();
 
@@ -174,6 +174,8 @@ public class TeamController extends BaseController {
             rosterTable[0][2] = "Salary";
 
             int i = 1;
+            int playerPayroll = 0;
+
             for (Player p: playerList) {
 
                 Set<PlayerSeason> psSet = p.getSeasons();
@@ -186,6 +188,7 @@ public class TeamController extends BaseController {
                         int psYear = ps.getYear();
 
                         if(psYear == year){
+                            playerPayroll += ps.getSalary();
                             rosterTable[i][0] = p.getName();
                             rosterTable[i][1] = ps.getGamesPlayed().toString();
                             rosterTable[i][2] = DOLLAR_FORMAT.format(ps.getSalary());
@@ -194,14 +197,14 @@ public class TeamController extends BaseController {
                         }
                     }
                 }
-
             }
 
+            teamTable[1][3] = DOLLAR_FORMAT.format(playerPayroll);
+
+            view.appendScrollBeginning();
+            view.buildTable(teamTable);
             view.buildTable(rosterTable);
-
+            view.appendScrollEnd();
         }
-
-        
     }
-
 }
