@@ -77,8 +77,8 @@ public class PlayerController extends BaseController {
             Player p = bos.get(i);
             PlayerCareerStats stats = new PlayerCareerStats(p);
             String pid = p.getId().toString();
-            table[i + 1][0] = view.encodeLink(new String[]{"id"}, new String[]{pid}, pid, ACT_DETAIL, SSP_PLAYER);
-            table[i + 1][1] = p.getName();
+            table[i + 1][0] = pid;
+            table[i + 1][1] = view.encodeLink(new String[]{"id"}, new String[]{pid}, p.getName(), ACT_DETAIL, SSP_PLAYER);
             table[i + 1][2] = DOLLAR_FORMAT.format(stats.getSalary());
             table[i + 1][3] = stats.getGamesPlayed().toString();
             table[i + 1][4] = formatDate(p.getFirstGame());
