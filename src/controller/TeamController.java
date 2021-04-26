@@ -67,10 +67,6 @@ public class TeamController extends BaseController {
         int teamId = Integer.parseInt(id.substring(5));
         int year = Integer.parseInt(id.substring(0, 4));
 
-//        if (id == null) {
-//            return;
-//        }
-
         TeamSeason ts = (TeamSeason) HibernateUtil.retrieveTeamSeasonById(teamId, year);
         if (ts == null) return;
         buildSearchResultsTableTeamRoster(ts);
@@ -184,10 +180,11 @@ public class TeamController extends BaseController {
 
                     for(PlayerSeason ps: psList){
                         int psYear = ps.getYear();
+                        String pid = p.getId().toString();
 
                         if(psYear == year){
                             playerPayroll += ps.getSalary();
-                            rosterTable[i][0] = p.getName();
+                            rosterTable[i][0] = view.encodeLink(new String[]{"id"}, new String[]{pid}, p.getName(), ACT_DETAIL, SSP_PLAYER);
                             rosterTable[i][1] = ps.getGamesPlayed().toString();
                             rosterTable[i][2] = DOLLAR_FORMAT.format(ps.getSalary());
                             i++;
