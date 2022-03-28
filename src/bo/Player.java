@@ -1,5 +1,6 @@
 package bo;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.Fetch;
@@ -35,6 +37,9 @@ public class Player {
 	@Fetch(FetchMode.JOIN)
 	Set<PlayerSeason> seasons = new HashSet<PlayerSeason>();
 	
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "players")
+	Set<TeamSeason> teamSeasons = new HashSet<TeamSeason>();
+	
 	@Column
 	String name;
 	@Column
@@ -51,7 +56,7 @@ public class Player {
 	String birthCity;
 	@Column
 	String birthState;
-  	@Column
+  @Column
 	String birthCountry;
 	@Column
 	Date firstGame;
@@ -64,6 +69,18 @@ public class Player {
 			if (ps.getYear().equals(year)) return ps;
 		}
 		return null;
+	}
+	
+	public Set<TeamSeason> getTeamSeasons() {
+		return teamSeasons;
+	}
+	
+	public void setTeamSeasons(Set<TeamSeason> teamSeasons) {
+		this.teamSeasons = teamSeasons;
+	}
+	
+	public void addTeamSeason(TeamSeason ts) {
+		this.teamSeasons.add(ts);
 	}
 	
 	public void addPosition(String p) {
@@ -212,5 +229,13 @@ public class Player {
 		return hash;
 	}
 	
+	public static Comparator<Player> playerComparator = new Comparator<Player>() {
+        @Override
+        public int compare(Player o1, Player o2) {
+            String name1 = o1.getName();
+            String name2 = o2.getName();
+            return name1.compareTo(name2);
+        }
+    };
 	
 }

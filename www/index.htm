@@ -1,8 +1,40 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="mlb.css" />
+    </head>
     <body>
-        <img src="./images/mlb-logo.jpg"><br/>
-        <a href="player.ssp?action=searchform">Players</a><br/>
-        <a href="team.ssp?action=searchform">Teams</a><br/>
+        <div id="header">
+            <span id="header-text">Major League Baseball</span>
+            
+            <a href="index.htm">
+                <img id="mlb-pic" src="./images/mlb-logo.jpg"><br/>
+            </a>
+
+            <span class="dropdown">
+                <button class="dropButton">|  |  |</button>
+                <div class="dropContent">
+                    <a href="index.htm">Home</a>
+                    <a href="player.ssp?action=searchform">Player</a>
+                    <a href="team.ssp?action=searchform">Team</a>
+                    <a href="https://www.mlb.com/" target="_blank">MLB.com</a>
+                </div>
+            </span>
+        </div>
+        
+        <div id="player-box">
+            <a href="player.ssp?action=searchform">
+                <div id="players">Players</div>
+            </a>
+            <img id="mlb-player" src="./images/mlb-player.jpg"><br/>
+        </div>
+
+        <div id="team-box">
+            <a href="team.ssp?action=searchform">
+                <div id="teams">Teams</div>
+            </a>
+        </div>
+
+        <img id="background" src="./images/mlb-team.jpg"><br/>
     </body>
 </html>

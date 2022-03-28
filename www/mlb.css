@@ -1,0 +1,375 @@
+@font-face{
+    font-family: MLB;
+    src: url(Strike-Em-Out.ttf);
+}
+
+body {
+    margin: 0;
+    text-decoration: none;
+    background-repeat: repeat-x;
+    overflow: hidden;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+::-webkit-scrollbar {
+    width: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(0, 45, 109);
+    border-radius: 10px;
+    border: solid 3px white;
+}
+
+a {
+    text-decoration: none;
+}
+
+#background {
+    position: absolute;
+    top: -5%;
+    left: 2.6%;
+    z-index: -2;
+    width: 100%;
+    opacity: .2;
+}
+
+#header {
+    height: 85px;
+    width: 100%;
+    background-color: rgb(0, 45, 109);
+    text-align: center;
+}
+
+#header-text {
+    display: inline-block;
+    color: white;
+    margin: auto;
+    margin-top: 20px;
+    max-width: 870px;
+    font-family: MLB;
+    font-size: 45px;
+    font-weight: bold;
+}
+
+#home {
+    position: absolute;
+    right: .5%;
+    top: 2.3%;
+    background-color: rgb(243, 30, 30);
+    font-size: 35px;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    padding: .6rem;
+}
+
+#mlb-player {
+    width: 70%;
+    position: absolute;
+    z-index: -1;
+    opacity: .2;
+}
+
+#mlb-pic {
+    width: 7%;
+    position: absolute;
+    top: 1%;
+    left: .5%;
+    border-radius: 5px;
+}
+
+#player-box, #team-box {
+    width: 50%;
+    top: 0px;
+    height: 680px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#player-box {
+    left: 0;
+    height: 100%;
+    background-color: white;
+    z-index: -1;
+}
+
+#team-box {
+    right: 0;
+    height: 100%;
+    z-index: -1;
+}
+
+#players, #teams {
+    width: 300px;
+    margin-bottom: 60px;
+    border-radius: 30px;
+    padding: .8rem;
+    font-size: 80px;
+    text-align: center;
+    background-color: rgb(0, 45, 109);
+    color:white;
+    z-index: 2;
+    -webkit-transition: padding .4s;
+}
+
+#players:hover, #teams:hover {
+    padding: 1.6rem;
+}
+
+#player, #team, #player1, #team1 {
+    position: absolute;
+    z-index: -1;
+    opacity: .2;
+}
+
+#player1 {
+    opacity: 0;
+}
+
+#player {
+    width: 35%;
+    position: absolute;
+    left: 75%;
+    right: 50%;
+    transform: translate(-50%, 2%);
+}
+
+#team, #team1 {
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -6%);
+}
+
+#team {
+    animation: move-background 100s infinite linear;
+}
+
+#team1 {
+    animation: move-background1 100s infinite linear;
+}
+
+#form {
+    width: 30%;
+    height: 200px;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, 180px);
+    color: white;
+    background-color: rgb(0, 45, 109);
+    border-radius: 30px;
+}
+
+#form-header {
+    width: 100%;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, 50%);
+    font-size: 35px;
+    text-align: center;
+}
+
+#form-input {
+    width: 40%;
+    height: 10%;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    font-size: 18px;
+    color: rgb(0, 45, 109);
+    text-indent: 15px;
+    transform: translate(-50%, 85px);
+    border-radius: 30px;
+    border: none;
+    outline: none;
+}
+
+#form-match {
+    width: 20px;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(10px, 135px);
+    font-size: 15px;
+}
+
+#match-header {
+    width: 25%;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(40px, 132px);
+    font-size: 20px;
+}
+
+#form-submit {
+    width: 20%;
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-140px, 134px);
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    color:rgb(0, 45, 109);
+    border-radius: 10px;
+    border: none;
+}
+
+@keyframes move-background {
+    0% {
+        left: 55%;
+    }
+
+    100% {
+        left: 150%;
+    }
+}
+
+@keyframes move-background1 {
+    0% {
+        left: -40%;
+    }
+
+    100% {
+        left: 55%;
+    }
+}
+
+.datatable {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 20px;
+    min-width: 95%;
+    margin-left: 2.5%;
+}
+
+.datatable tr th {
+    background-color: rgb(0, 45, 109);
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+
+th {
+    position: sticky;
+    top: 0;
+}
+
+.datatable tbody tr td {
+    padding: .5rem;
+}
+
+.datatable tbody tr {
+    border-bottom: 1px solid rgb(0, 45, 109);
+    background-color: white;
+    color:rgb(0, 45, 109);
+    text-decoration: none;
+}
+
+.datatable tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+#scroll {
+    position: absolute;
+    top: 15%;
+    width: 100%;
+    height: 80%;
+    margin-top: 10px;
+    overflow-y: scroll;
+    z-index: 100;
+}
+
+#searchFor, #containing {
+    width: 80%;
+    position: absolute;
+    font-size: 30px;
+    font-weight: bold;
+    z-index: 100;
+    color:rgb(0, 45, 109);
+    margin: 10px;
+}
+
+#containing {
+    top: 10%;
+    left: 2%;
+}
+
+#searchFor {
+    top: 10%;
+    right: 16%;
+}
+
+#name-header {
+    position: absolute;
+    top: 12.5%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    margin: auto;
+    text-align: center;
+    z-index: 8;
+    color: rgb(243, 30, 30);
+    font-family: MLB;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+.dropButton {
+    width: 60px;
+    height: 50px;
+    background-color: rgb(243, 30, 30);
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px;
+    padding: .6rem;
+}
+
+.dropdown {
+    position: absolute;
+    right: 3%;
+    top: 17.5px;
+    margin-bottom: 125px;
+}
+
+.dropContent {
+    display: none;
+    position: absolute;
+    background-color: rgb(0, 45, 109);
+    min-width: 90px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 110;
+}
+
+.dropContent a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropContent a:hover {background-color: #ddd; color: black;}
+
+.dropdown:hover .dropContent {display: block;}
+
+.dropdown:hover .dropButton {background-color: rgb(243, 30, 30);}
